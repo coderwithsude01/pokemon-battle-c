@@ -8,14 +8,7 @@
 
 
 
-// static int hasAlive(const Player *p){
 
-//     for (int i = 0; i < 6; i++) {
-//         if (p->Pokemons[i].currentHP > 0) return 1;
-//     }
-//     return 0;
-
-// }
 
 static int hasAlive(Player *p)
 {
@@ -28,11 +21,10 @@ static int hasAlive(Player *p)
 static int nextAliveIndex(const Player *p)
 {
     for (int i = 0; i < 6; i++) {
-        if (p->Pokemons[i].currentHP > 0) return i + 1; // 1..6
+        if (p->Pokemons[i].currentHP > 0) return i + 1; 
     }
-    return 1; // aslında burada oyun bitmiş olur; güvenlik dönüşü
+    return 1; 
 }
-/* bayılan olursa, ilk yaşayan pokemonun indexini (1..6) döndür */
 
 
 void game(Player *p1, Player *p2, Type Types[18])
@@ -49,10 +41,6 @@ void game(Player *p1, Player *p2, Type Types[18])
 }
 
 
-
-
-//Available Pokemons (HP > 0):
-//1 - Pikachu  3 - Bulbasaur  5 - Gengar
 
 void playRound(Player *p1, Player *p2, Type Types[18])
 {
@@ -164,12 +152,10 @@ void applyDamage(Player *p1, Player *p2, Type Types[18],
         if ((*atkPoke).currentHP <= 0) continue;
         if ((*defPoke).currentHP <= 0) continue;
 
-        /* move'ı burada al: sadece saldırıyorsa */
         if (moveChoice < 1) moveChoice = 1;
         if (moveChoice > 4) moveChoice = 4;
         Move *atkMove = &((*atkPoke).moves[moveChoice - 1]);
 
-        /* Physical/Special stat seçimi */
         float atkStat, defStat;
         if ((*atkMove).category == PHYSICAL) {
             atkStat = (float)(*atkPoke).attack;
@@ -180,7 +166,6 @@ void applyDamage(Player *p1, Player *p2, Type Types[18],
         }
         if (defStat <= 0.0f) defStat = 1.0f;
 
-        /* TypeEffect1 / TypeEffect2 */
         float type1 = 1.0f;
         float type2 = 1.0f;
 
@@ -194,7 +179,6 @@ void applyDamage(Player *p1, Player *p2, Type Types[18],
 
         if (moveTypeIndex != -1) {
 
-            /* type1: defender.types[0] */
             for (int j = 0; j < 19; j++) {
                 if (strcmp(Types[moveTypeIndex].effects[j].defName, (*defPoke).types[0].name) == 0) {
                     type1 = Types[moveTypeIndex].effects[j].multiplier;
@@ -202,7 +186,6 @@ void applyDamage(Player *p1, Player *p2, Type Types[18],
                 }
             }
 
-            /* type2: defender.types[1] (None ise zaten 1 kalır) */
             if (strcmp((*defPoke).types[1].name, "None") != 0) {
                 for (int j = 0; j < 19; j++) {
                     if (strcmp(Types[moveTypeIndex].effects[j].defName, (*defPoke).types[1].name) == 0) {
@@ -213,7 +196,7 @@ void applyDamage(Player *p1, Player *p2, Type Types[18],
             }
         }
 
-        /* STAB */
+        
         float stab = 1.0f;
         if (strcmp((*atkMove).type.name, (*atkPoke).types[0].name) == 0 ||
             strcmp((*atkMove).type.name, (*atkPoke).types[1].name) == 0) {
@@ -228,115 +211,20 @@ void applyDamage(Player *p1, Player *p2, Type Types[18],
 
 printf("\n%s used %s! Damage: %d\n", (*atkPoke).name, (*atkMove).name, dmg);
 
-if ((*defPoke).currentHP <= 0) {                 // PDF: below 0 ise bayılır  [oai_citation:4‡Computer_Programming_III-3.pdf](sediment://file_000000008b3c7246ae9ba68407c2b6d1)
+if ((*defPoke).currentHP <= 0) {                 
     (*defPoke).currentHP = 0;
     printf("%s HP: %d\n", (*defPoke).name, (*defPoke).currentHP);
     printf("%s fainted!\n", (*defPoke).name);
 
-    // HANGİ oyuncu bayıldıysa onun currentIndex'ini otomatik güncelle
     if (defPoke == p1Poke) {
         p1->currentIndex = nextAliveIndex(p1);
     } else {
         p2->currentIndex = nextAliveIndex(p2);
     }
 
-    break; // bayıldıysa diğer saldırı yok  [oai_citation:5‡Computer_Programming_III-3.pdf](sediment://file_000000008b3c7246ae9ba68407c2b6d1)
+    break; 
 } else {
     printf("%s HP: %d\n", (*defPoke).name, (*defPoke).currentHP);
 }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// void applyDamage(Player *Player1, Player *Player2, Type Types[18],
-//                  int p1Action, int p1MoveChoice,
-//                  int p2Action, int p2MoveChoice)
-// {
-//     Pokemon *p1 = &((*Player1).Pokemons[(*Player1).currentIndex - 1]);
-//     Pokemon *p2 = &((*Player2).Pokemons[(*Player2).currentIndex - 1]);
-
-//     /* Change Pokemon seçen saldırmaz */
-//     int p1CanAttack = (p1Action == 1) && ((*p1).currentHP > 0);
-//     int p2CanAttack = (p2Action == 1) && ((*p2).currentHP > 0);
-
-//     Move *m1 = &((*p1).moves[p1MoveChoice - 1]);
-//     Move *m2 = &((*p2).moves[p2MoveChoice - 1]);
-
-//     /* Hızlı olan önce vurur */
-//     int p1First = ((*p1).speed >= (*p2).speed);
-
-//     for (int turn = 0; turn < 2; turn++) {
-
-//         Pokemon *att, *def;
-//         Move *mv;
-//         int canAttack;
-
-//         if ((turn == 0 && p1First) || (turn == 1 && !p1First)) {
-//             att = p1; def = p2; mv = m1; canAttack = p1CanAttack;
-//         } else {
-//             att = p2; def = p1; mv = m2; canAttack = p2CanAttack;
-//         }
-
-//         if (!canAttack) continue;
-//         if ((*att).currentHP <= 0 || (*def).currentHP <= 0) continue;
-
-//         /* Physical / Special */
-//         float atk = ((*mv).category == PHYSICAL) ? (*att).attack : (*att).spAtk;
-//         float defStat = ((*mv).category == PHYSICAL) ? (*def).defense : (*def).spDef;
-
-//         /* TypeEffect1 ve TypeEffect2 */
-//         float type1 = 1.0f, type2 = 1.0f;
-
-//         for (int i = 0; i < 18; i++) {
-//             if (strcmp(Types[i].name, (*mv).type.name) == 0) {
-//                 for (int j = 0; j < 18; j++) {
-//                     if (strcmp(Types[i].effects[j].defName, (*def).types[0].name) == 0)
-//                         type1 = Types[i].effects[j].multiplier;
-
-//                     if (strcmp((*def).types[1].name, "None") != 0 &&
-//                         strcmp(Types[i].effects[j].defName, (*def).types[1].name) == 0)
-//                         type2 = Types[i].effects[j].multiplier;
-//                 }
-//             }
-//         }
-
-//         /* STAB */
-//         float stab = 1.0f;
-//         if (strcmp((*mv).type.name, (*att).types[0].name) == 0 ||
-//             strcmp((*mv).type.name, (*att).types[1].name) == 0)
-//             stab = 1.5f;
-
-//         /* PDF DAMAGE FORMÜLÜ */
-//         float damage = (*mv).power * (atk / defStat) * type1 * type2 * stab;
-//         int dmg = (int)(damage + 0.5f);
-
-//         (*def).currentHP -= dmg;
-
-//         printf("\n%s used %s! Damage: %d\n", (*att).name, (*mv).name, dmg);
-
-//         /* Bayılırsa diğer vuramaz */
-//         if ((*def).currentHP <= 0) {
-//             (*def).currentHP = 0;
-//             printf("%s fainted!\n", (*def).name);
-//             break;
-//         }
-//     }
-
-
-
-
-
-
-
-
-// }
