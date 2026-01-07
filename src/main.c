@@ -7,11 +7,13 @@ int main(void)
     Move Moves[486];
     Pokemon Pokemons[1015];
 
-    Player Player1;
-    Player Player2;
+    Player p1;
+    Player  p2;
 
-    initialize(Types, Moves, Pokemons, &Player1, &Player2);
-    game(&Player1, &Player2, Types);
+    initialize(Types, Moves, Pokemons, &p1, &p2);
+    game(&p1, &p2, Types);
 
     return 0;
+
+
 }
