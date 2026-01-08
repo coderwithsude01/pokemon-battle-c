@@ -50,20 +50,37 @@ void playRound(Player *p1, Player *p2, Type Types[18])
     int index;
 
 int p1Action, p2Action;
-   do {
+int ch;
+
+do {
     printf("\n%s:\n1 - Attack\n2 - Change Pokemon\nSelect: ", p1->name);
-    scanf("%d", &p1Action);
+
+    if (scanf("%d", &p1Action) != 1) {
+        printf("Error: Please enter a NUMBER (1 or 2)!\n");
+        while ((ch = getchar()) != '\n' && ch != EOF); 
+        p1Action = 0;
+        continue;
+    }
 
     if (p1Action != 1 && p1Action != 2)
         printf("Error: Only 1 or 2!\n");
+
 } while (p1Action != 1 && p1Action != 2);
 
-   do {
+
+do {
     printf("\n%s:\n1 - Attack\n2 - Change Pokemon\nSelect: ", p2->name);
-    scanf("%d", &p2Action);
+
+    if (scanf("%d", &p2Action) != 1) {
+        printf("Error: Please enter a NUMBER (1 or 2)!\n");
+        while ((ch = getchar()) != '\n' && ch != EOF); 
+        p2Action = 0;
+        continue;
+    }
 
     if (p2Action != 1 && p2Action != 2)
         printf("Error: Only 1 or 2!\n");
+
 } while (p2Action != 1 && p2Action != 2);
 
     if (p1Action == 1) {
