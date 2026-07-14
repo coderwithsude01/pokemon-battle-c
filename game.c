@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/prototypes.h"
+#include "include/prototypes.h"
 
 #define TYPES_FILE   "data/types.txt"
 #define MOVES_FILE   "data/moves.txt"
